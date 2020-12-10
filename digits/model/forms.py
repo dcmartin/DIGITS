@@ -339,7 +339,7 @@ class ModelForm(Form):
             index,
             '#%s - %s (%s memory)' % (
                 index,
-                get_device(index).name,
+                get_device(index).name.decode("utf-8"),
                 sizeof_fmt(
                     get_nvml_info(index)['memory']['total']
                     if get_nvml_info(index) and 'memory' in get_nvml_info(index)
@@ -356,7 +356,7 @@ class ModelForm(Form):
             index,
             '#%s - %s (%s memory)' % (
                 index,
-                get_device(index).name,
+                get_device(index).name.decode("utf-8"),
                 sizeof_fmt(
                     get_nvml_info(index)['memory']['total']
                     if get_nvml_info(index) and 'memory' in get_nvml_info(index)
