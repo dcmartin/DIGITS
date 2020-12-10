@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # Copyright (c) 2014-2017, NVIDIA CORPORATION.  All rights reserved.
 
 import argparse
@@ -9,7 +9,8 @@ import requests
 import re
 import sys
 import time
-import urllib
+import urllib.request, urllib.parse, urllib.error
+from urllib import parse
 
 # Add path for DIGITS package
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -20,7 +21,7 @@ logger = logging.getLogger('digits.tools.parse_folder')
 
 
 def unescape(s):
-    return urllib.unquote(s)
+    return parse.unquote(s)
 
 
 def validate_folder(folder):

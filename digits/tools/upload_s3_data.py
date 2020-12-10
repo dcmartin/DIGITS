@@ -1,10 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import sys
 import os
 import ConfigParser
-from s3_walker import S3Walker
+from digits.tools.s3_walker import S3Walker
 
 config = ConfigParser.RawConfigParser()
 config.read('upload_config.cfg')
@@ -13,6 +13,12 @@ accesskey = config.get('S3 Config', 'accesskey')
 secretkey = config.get('S3 Config', 'secretkey')
 bucket_name = config.get('S3 Config', 'bucket')
 path_prefix = config.get('S3 Config', 'prefix')
+try:
+    location = config.get('S3 Config', 'location')
+except ConfigParser.NoOptionError as e:
+    print('Bucket location not provided.  Use USA default location')
+    location = ''
+
 if not (path_prefix.endswith('/')):
     path_prefix += '/'
 
@@ -31,7 +37,7 @@ walker.connect()
 
 # Create bucket
 print('Creating bucket')
-walker.create_bucket(bucket_name)
+walker.create_bucket(bucket_name, location)
 
 mnist_train_folder = os.path.join(mnist_folder, 'train')
 digits = os.listdir(mnist_train_folder)

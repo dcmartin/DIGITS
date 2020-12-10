@@ -155,6 +155,11 @@ $("#dataset").change();
                     {{form.batch_accumulation.tooltip}}
                     {{form.batch_accumulation(class='form-control')}}
                 </div>
+                <div class="form-group{{mark_errors([form.nvcaffe_blob_format])}}">
+                    {{form.nvcaffe_blob_format.label}}
+                    {{form.nvcaffe_blob_format.tooltip}}
+                    {{form.nvcaffe_blob_format(class='form-control')}}
+                </div>
                 <div class="form-group{{mark_errors([form.solver_type])}}">
                     {{form.solver_type.label}}
                     {{form.solver_type.tooltip}}

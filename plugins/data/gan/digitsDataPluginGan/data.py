@@ -267,12 +267,12 @@ class DataIngestion(DataIngestionInterface):
                 grid_size = self.userdata['row_count']
 
                 # now interpolate across columns
-                for row in xrange(grid_size):
+                for row in range(grid_size):
                     row_k = row / float(grid_size - 1)
                     z_left = slerp(row_k, z1, z3)
                     z_right = slerp(row_k, z2, z4)
                     entries.append(z_left.reshape((1, 1, self.input_dim)))
-                    for col in xrange(1, grid_size - 1):
+                    for col in range(1, grid_size - 1):
                         col_k = col / float(grid_size - 1)
                         z = slerp(col_k, z_left, z_right)
                         entries.append(z.reshape((1, 1, self.input_dim)))
@@ -283,7 +283,7 @@ class DataIngestion(DataIngestionInterface):
                 num_transitions = self.userdata['animation_num_transitions']
                 for i, z in enumerate(zs):
                     z_next = zs[(i + 1) % len(zs)]
-                    for k in xrange(num_transitions):
+                    for k in range(num_transitions):
                         z_ = slerp(float(k) / num_transitions, z, z_next)
                         entries.append(z_.reshape((1, 1, self.input_dim)))
             else:

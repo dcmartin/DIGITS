@@ -1,14 +1,15 @@
 # Copyright (c) 2014-2017, NVIDIA CORPORATION.  All rights reserved.
 from __future__ import absolute_import
 
+from digits import test_utils
+test_utils.skipIfNotFramework('caffe')
+
 from .caffe_train import CaffeTrainTask, CaffeTrainSanityCheckError
 
 from google.protobuf import text_format
-from digits import test_utils
 
 # Must import after importing digit.config
 import caffe_pb2
-
 
 def check_positive(desc, stage):
     network = caffe_pb2.NetParameter()

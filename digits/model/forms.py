@@ -33,7 +33,7 @@ class ModelForm(Form):
             # below function raises a BadNetworkException in case of validation error
             fw.validate_network(field.data)
         except frameworks.errors.BadNetworkError as e:
-            raise validators.ValidationError('Bad network: %s' % e.message)
+            raise validators.ValidationError('Bad network: %s' % str(e))
 
     def validate_file_exists(form, field):
         from_client = bool(form.python_layer_from_client.data)
@@ -157,6 +157,20 @@ class ModelForm(Form):
         ],
         tooltip=("Accumulate gradients over multiple batches (useful when you "
                  "need a bigger batch size for training but it doesn't fit in memory).")
+    )
+
+    nvcaffe_blob_format = utils.forms.SelectField(
+        'Blob format',
+        choices=[
+            ('NVCaffe', 'NVCaffe'),
+            ('Compatible', 'Compatible'),
+        ],
+        tooltip=("Newer NVCaffe stores blobs in a more efficient, BVLC-Caffe-incompatible, format. "
+                 "Selecting 'Compatible' makes .caffemodel files compatible with BVLC Caffe. "
+                 "Ignored in BVLC or other frameworks. "
+                 "Users have to remove 'store_blob_in_old_format' line in solver.prototxt "
+                 "when it is reused in BVLC Caffe"),
+        default='NVCaffe'
     )
 
     # Solver types

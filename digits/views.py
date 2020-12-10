@@ -9,6 +9,7 @@ import os
 
 import flask
 from flask_socketio import join_room, leave_room
+from werkzeug import HTTP_STATUS_CODES
 import werkzeug.exceptions
 
 from .config import config_value
@@ -169,8 +170,15 @@ def json_dict(job, model_output_fields):
                     model_output_fields.add(key + 'min')
                     model_output_fields.add(key + 'max')
                     d.update({key + 'last': data[-1]})
-                    d.update({key + 'min': min(data)})
-                    d.update({key + 'max': max(data)})
+                    try:
+                        d.update({key + 'min': min(data)})
+                    except TypeError:
+                        d.update({key + 'min': 0})
+                    try:
+                        d.update({key + 'max': max(data)})
+                    except TypeError:
+                        d.update({key + 'max': 100})
+
 
         if (job.train_task().combined_graph_data() and
                 'columns' in job.train_task().combined_graph_data()):
@@ -339,7 +347,7 @@ def login():
         utils.auth.validate_username(username)
     except ValueError as e:
         # Invalid username
-        flask.flash(e.message, 'danger')
+        flask.flash(str(e), 'danger')
         return flask.render_template('login.html', next=next_url)
 
     # Valid username
@@ -771,5 +779,5 @@ def on_leave_jobs():
     if 'room' in flask.session:
         room = flask.session['room']
         del flask.session['room']
-        # print '>>> Somebody left room %s' % room
+        # print('>>> Somebody left room %s' % room)
         leave_room(room)

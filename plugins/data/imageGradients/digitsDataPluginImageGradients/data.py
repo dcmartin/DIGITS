@@ -4,6 +4,7 @@ from __future__ import absolute_import
 from digits.utils import subclass, override, constants
 from digits.extensions.data.interface import DataIngestionInterface
 from .forms import DatasetForm, InferenceForm
+from six.moves import xrange
 
 import numpy as np
 import os

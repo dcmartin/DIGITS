@@ -12,6 +12,7 @@ import time
 import h5py
 import numpy as np
 import PIL.Image
+from six.moves import reduce
 
 from .train import TrainTask
 import digits
@@ -481,7 +482,7 @@ class TorchTrainTask(TrainTask):
                 self.traceback = traceback
 
             if 'DIGITS_MODE_TEST' in os.environ:
-                print output
+                print(output)
 
     @override
     def detect_snapshots(self):
@@ -752,8 +753,8 @@ class TorchTrainTask(TrainTask):
         std = np.std(data)
         y, x = np.histogram(data, bins=20)
         y = list(y)
-        ticks = x[[0, len(x) / 2, -1]]
-        x = [(x[i] + x[i + 1]) / 2.0 for i in xrange(len(x) - 1)]
+        ticks = x[[0, len(x) // 2, -1]]
+        x = [(x[i] + x[i + 1]) / 2.0 for i in range(len(x) - 1)]
         ticks = list(ticks)
         return (mean, std, [y, x, ticks])
 

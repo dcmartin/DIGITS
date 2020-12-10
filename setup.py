@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
 
 import os.path
@@ -8,7 +8,10 @@ LOCAL_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Get current __version__
 version_locals = {}
-execfile(os.path.join(LOCAL_DIR, 'digits', 'version.py'), {}, version_locals)
+version_path=os.path.join(LOCAL_DIR, 'digits', 'version.py')
+with open(version_path) as version_file:
+    version_code=compile(version_file.read(), version_path, 'exec')
+    exec(version_code, {}, version_locals)
 
 # Get requirements
 requirements = []

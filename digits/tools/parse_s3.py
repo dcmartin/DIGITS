@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # Copyright (c) 2014-2017, NVIDIA CORPORATION.  All rights reserved.
 
 import argparse
@@ -9,8 +9,8 @@ import requests
 import re
 import sys
 import time
-import urllib
-from s3_walker import S3Walker
+import urllib.request, urllib.parse, urllib.error
+from digits.tools.s3_walker import S3Walker
 
 # Add path for DIGITS package
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -22,7 +22,7 @@ local_prefix = 's3_tmp'
 
 
 def unescape(s):
-    return urllib.unquote(s)
+    return urllib.parse.unquote(s)
 
 
 def validate_s3(walker, bucket, path):

@@ -2,7 +2,7 @@
 
 import os
 import shutil
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 
 class DataDownloader(object):
@@ -33,7 +33,7 @@ class DataDownloader(object):
         self.uncompressData()
 
         self.processData()
-        print "Dataset directory is created successfully at '%s'" % self.outdir
+        print("Dataset directory is created successfully at '%s'" % self.outdir)
 
     def urlList(self):
         """
@@ -59,8 +59,8 @@ class DataDownloader(object):
         """
         download_path = os.path.join(self.outdir, os.path.basename(url))
         if not os.path.exists(download_path):
-            print "Downloading url=%s ..." % url
-            urllib.urlretrieve(url, download_path)
+            print("Downloading url=%s ..." % url)
+            urllib.request.urlretrieve(url, download_path)
 
     def mkdir(self, d, clean=False):
         """

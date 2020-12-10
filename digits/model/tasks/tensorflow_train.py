@@ -12,11 +12,13 @@ import sys
 
 import h5py
 import numpy as np
+from six.moves import xrange, reduce
 
 from .train import TrainTask
 import digits
 from digits import utils
 from digits.utils import subclass, override, constants
+import absl.logging
 import tensorflow as tf
 
 # NOTE: Increment this everytime the pickled object changes
@@ -175,7 +177,7 @@ class TensorflowTrainTask(TrainTask):
     def task_arguments(self, resources, env):
 
         args = [sys.executable,
-                os.path.join(os.path.dirname(os.path.abspath(digits.__file__)), 'tools', 'tensorflow', 'main.py'),
+                os.path.join(os.path.dirname(os.path.abspath(digits.__file__)), 'tools', 'tensorflow_tools', 'main.py'),
                 '--network=%s' % self.model_file,
                 '--epoch=%d' % int(self.train_epochs),
                 '--networkDirectory=%s' % self.job_dir,
@@ -413,8 +415,33 @@ class TensorflowTrainTask(TrainTask):
                 level = 'critical'
             return (timestamp, level, message)
         else:
-            # self.logger.warning('Unrecognized task output "%s"' % line)
-            return (None, None, None)
+            """ Abseil logging facility output format.  Different from native Python logger."""
+            match = re.match(absl.logging.ABSL_LOGGING_PREFIX_REGEX + r'] (?P<message>.*)$', line)
+            if match:
+                matched_time = "{}-{} {}:{}:{}".format(
+                    match.group('month'),
+                    match.group('day'),
+                    match.group('hour'),
+                    match.group('minute'),
+                    match.group('second'))
+                timestamp = time.mktime(time.strptime(matched_time, '%m-%d %H:%M:%S'))
+                level = match.group('severity')
+                message = match.group('message')
+                """ Check this for definition of level.
+                https://github.com/abseil/abseil-py/blob/313935f33c31cc2bee2ef1c0dd883f8444a20723/absl/logging/converter.py#L95
+                """
+                if level == 'I':
+                    level = 'info'
+                elif level == 'W':
+                    level = 'warning'
+                elif level == 'E':
+                    level = 'error'
+                elif level == 'F':  # FAIL
+                    level = 'critical'
+                return (timestamp, level, message)
+            else:
+                # self.logger.warning('Unrecognized task output "%s"' % line)
+                return (None, None, None)
 
     def send_snapshot_update(self):
         """
@@ -445,7 +472,7 @@ class TensorflowTrainTask(TrainTask):
         if os.path.exists(self.path(self.TENSORFLOW_LOG)):
             output = subprocess.check_output(['tail', '-n40', self.path(self.TENSORFLOW_LOG)])
             lines = []
-            for line in output.split('\n'):
+            for line in output.decode('utf-8').split('\n'):
                 # parse tensorflow header
                 timestamp, level, message = self.preprocess_output_tensorflow(line)
 
@@ -459,7 +486,7 @@ class TensorflowTrainTask(TrainTask):
                 self.traceback = traceback
 
             if 'DIGITS_MODE_TEST' in os.environ:
-                print output
+                print(output)
 
     @override
     def detect_timeline_traces(self):
@@ -545,7 +572,7 @@ class TensorflowTrainTask(TrainTask):
         file_to_load = self.get_snapshot(snapshot_epoch)
 
         args = [sys.executable,
-                os.path.join(os.path.dirname(os.path.abspath(digits.__file__)), 'tools', 'tensorflow', 'main.py'),
+                os.path.join(os.path.dirname(os.path.abspath(digits.__file__)), 'tools', 'tensorflow_tools', 'main.py'),
                 '--inference_db=%s' % temp_image_path,
                 '--network=%s' % self.model_file,
                 '--networkDirectory=%s' % self.job_dir,
@@ -731,7 +758,7 @@ class TensorflowTrainTask(TrainTask):
         std = np.std(data)
         y, x = np.histogram(data, bins=20)
         y = list(y)
-        ticks = x[[0, len(x)/2, -1]]
+        ticks = x[[0, len(x)//2, -1]]
         x = [(x[i]+x[i+1])/2.0 for i in xrange(len(x)-1)]
         ticks = list(ticks)
         return (mean, std, [y, x, ticks])
@@ -843,7 +870,7 @@ class TensorflowTrainTask(TrainTask):
             file_to_load = self.get_snapshot(snapshot_epoch)
 
             args = [sys.executable,
-                    os.path.join(os.path.dirname(os.path.abspath(digits.__file__)), 'tools', 'tensorflow', 'main.py'),
+                    os.path.join(os.path.dirname(os.path.abspath(digits.__file__)), 'tools', 'tensorflow_tools', 'main.py'),
                     '--testMany=1',
                     '--allPredictions=1',  # all predictions are grabbed and formatted as required by DIGITS
                     '--inference_db=%s' % str(temp_dir_path),

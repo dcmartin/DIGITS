@@ -10,6 +10,7 @@ import werkzeug.exceptions
 
 from .forms import GenericImageModelForm
 from .job import GenericImageModelJob
+from digits.job import Job
 from digits.pretrained_model.job import PretrainedModelJob
 from digits import extensions, frameworks, utils
 from digits.config import config_value
@@ -104,7 +105,7 @@ def create(extension_id=None):
     add_learning_rate = len(form.learning_rate.data) > 1
 
     # Add swept batch_size
-    sweeps = [dict(s.items() + [('batch_size', bs)]) for bs in form.batch_size.data for s in sweeps[:]]
+    sweeps = [dict(list(s.items()) + [('batch_size', bs)]) for bs in form.batch_size.data for s in sweeps[:]]
     add_batch_size = len(form.batch_size.data) > 1
     n_jobs = len(sweeps)
 
@@ -269,6 +270,7 @@ def create(extension_id=None):
                 rms_decay=form.rms_decay.data,
                 shuffle=form.shuffle.data,
                 data_aug=data_aug,
+                blob_format=form.nvcaffe_blob_format.data,
             )
             )
 
@@ -409,7 +411,7 @@ def infer_one():
 
     if request_wants_json():
         return flask.jsonify({'outputs': dict((name, blob.tolist())
-                                              for name, blob in outputs.iteritems())}), status_code
+                                              for name, blob in outputs.items())}), status_code
     else:
         return flask.render_template(
             'models/images/generic/infer_one.html',
@@ -504,7 +506,7 @@ def infer_extension():
     if request_wants_json():
         result = {}
         for i, key in enumerate(keys):
-            result[key] = dict((name, blob[i].tolist()) for name, blob in outputs.iteritems())
+            result[key] = dict((name, blob[i].tolist()) for name, blob in outputs.items())
         return flask.jsonify({'outputs': result}), status_code
     else:
         return flask.render_template(
@@ -593,7 +595,7 @@ def infer_db():
     if request_wants_json():
         result = {}
         for i, key in enumerate(keys):
-            result[key] = dict((name, blob[i].tolist()) for name, blob in outputs.iteritems())
+            result[key] = dict((name, blob[i].tolist()) for name, blob in outputs.items())
         return flask.jsonify({'outputs': result}), status_code
     else:
         return flask.render_template(
@@ -644,7 +646,7 @@ def infer_many():
     paths = []
 
     for line in image_list.readlines():
-        line = line.strip()
+        line = line.decode('utf-8').strip()
         if not line:
             continue
 
@@ -708,7 +710,7 @@ def infer_many():
     if request_wants_json():
         result = {}
         for i, path in enumerate(paths):
-            result[path] = dict((name, blob[i].tolist()) for name, blob in outputs.iteritems())
+            result[path] = dict((name, blob[i].tolist()) for name, blob in outputs.items())
         return flask.jsonify({'outputs': result}), status_code
     else:
         return flask.render_template(
@@ -784,7 +786,7 @@ def get_datasets(extension_id):
                 if (isinstance(j, GenericImageDatasetJob) or isinstance(j, GenericDatasetJob)) and
                 (j.status.is_running() or j.status == Status.DONE)]
     return [(j.id(), j.name())
-            for j in sorted(jobs, cmp=lambda x, y: cmp(y.id(), x.id()))]
+            for j in sorted(jobs, key=Job.id)]
 
 
 def get_inference_visualizations(dataset, inputs, outputs):
@@ -810,7 +812,7 @@ def get_inference_visualizations(dataset, inputs, outputs):
     visualizations = []
     # process data
     n = len(inputs['ids'])
-    for idx in xrange(n):
+    for idx in range(n):
         input_id = inputs['ids'][idx]
         input_data = inputs['data'][idx]
         output_data = {key: outputs[key][idx] for key in outputs}
@@ -831,7 +833,7 @@ def get_inference_visualizations(dataset, inputs, outputs):
 def get_previous_networks():
     return [(j.id(), j.name()) for j in sorted(
         [j for j in scheduler.jobs.values() if isinstance(j, GenericImageModelJob)],
-        cmp=lambda x, y: cmp(y.id(), x.id())
+        key=Job.id
     )
     ]
 
@@ -839,7 +841,7 @@ def get_previous_networks():
 def get_previous_networks_fulldetails():
     return [(j) for j in sorted(
         [j for j in scheduler.jobs.values() if isinstance(j, GenericImageModelJob)],
-        cmp=lambda x, y: cmp(y.id(), x.id())
+        key=Job.id
     )
     ]
 
@@ -859,7 +861,7 @@ def get_previous_network_snapshots():
 def get_pretrained_networks():
     return [(j.id(), j.name()) for j in sorted(
         [j for j in scheduler.jobs.values() if isinstance(j, PretrainedModelJob)],
-        cmp=lambda x, y: cmp(y.id(), x.id())
+        key=Job.id
     )
     ]
 
@@ -867,7 +869,7 @@ def get_pretrained_networks():
 def get_pretrained_networks_fulldetails():
     return [(j) for j in sorted(
         [j for j in scheduler.jobs.values() if isinstance(j, PretrainedModelJob)],
-        cmp=lambda x, y: cmp(y.id(), x.id())
+        key=Job.id
     )
     ]
 

@@ -12,6 +12,7 @@ import flask
 from flask import flash
 import requests
 import werkzeug.exceptions
+from six.moves import reduce
 
 from . import images as model_images
 from . import ModelJob
@@ -185,7 +186,7 @@ def visualize_lr():
     datalist = []
     for j, lr in enumerate(lrs):
         data = ['Learning Rate %d' % j]
-        for i in xrange(101):
+        for i in range(101):
             if policy == 'fixed':
                 data.append(lr)
             elif policy == 'step':
@@ -354,7 +355,7 @@ def download(job_id, extension):
     # and store in tempfile (for archive)
     info = json.dumps(job.json_dict(verbose=False, epoch=epoch), sort_keys=True, indent=4, separators=(',', ': '))
     info_io = io.BytesIO()
-    info_io.write(info)
+    info_io.write(info.encode())
 
     b = io.BytesIO()
     if extension in ['tar', 'tar.gz', 'tgz', 'tar.bz2']:

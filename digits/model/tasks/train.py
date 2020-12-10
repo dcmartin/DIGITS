@@ -65,6 +65,7 @@ class TrainTask(Task):
         self.network = kwargs.pop('network', None)
         self.framework_id = kwargs.pop('framework_id', None)
         self.data_aug = kwargs.pop('data_aug', None)
+        self.blob_format = kwargs.pop('blob_format', None)
 
         super(TrainTask, self).__init__(job_dir=job.dir(), **kwargs)
         self.pickver_task_train = PICKLE_VERSION
@@ -365,7 +366,7 @@ class TrainTask(Task):
             d[name].data.append(value)
         else:
             # we might have missed one
-            for _ in xrange(epoch_len - name_len - 1):
+            for _ in range(epoch_len - name_len - 1):
                 d[name].data.append(None)
             d[name].data.append(value)
 
@@ -501,7 +502,7 @@ class TrainTask(Task):
             return None
 
         # return 100-200 values or fewer
-        stride = max(len(self.train_outputs['epoch'].data) / 100, 1)
+        stride = max(len(self.train_outputs['epoch'].data) // 100, 1)
         e = ['epoch'] + self.train_outputs['epoch'].data[::stride]
         lr = ['lr'] + self.train_outputs['learning_rate'].data[::stride]
 
@@ -566,11 +567,11 @@ class TrainTask(Task):
         if self.train_outputs and 'epoch' in self.train_outputs:
             if cull:
                 # max 200 data points
-                stride = max(len(self.train_outputs['epoch'].data) / 100, 1)
+                stride = max(len(self.train_outputs['epoch'].data) // 100, 1)
             else:
                 # return all data
                 stride = 1
-            for name, output in self.train_outputs.iteritems():
+            for name, output in self.train_outputs.items():
                 if name not in ['epoch', 'learning_rate']:
                     col_id = '%s-train' % name
                     data['xs'][col_id] = 'train_epochs'
@@ -591,11 +592,11 @@ class TrainTask(Task):
         if self.val_outputs and 'epoch' in self.val_outputs:
             if cull:
                 # max 200 data points
-                stride = max(len(self.val_outputs['epoch'].data) / 100, 1)
+                stride = max(len(self.val_outputs['epoch'].data) // 100, 1)
             else:
                 # return all data
                 stride = 1
-            for name, output in self.val_outputs.iteritems():
+            for name, output in self.val_outputs.items():
                 if name not in ['epoch']:
                     col_id = '%s-val' % name
                     data['xs'][col_id] = 'val_epochs'

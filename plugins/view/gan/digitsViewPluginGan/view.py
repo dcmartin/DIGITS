@@ -7,7 +7,7 @@ import os
 try:
     from cStringIO import StringIO
 except ImportError:
-    from StringIO import StringIO
+    from io import StringIO
 import pickle
 
 import imageio
@@ -167,7 +167,7 @@ class Visualization(VisualizationInterface):
         """
         Process one inference and return data to visualize
         """
-        data = output_data[output_data.keys()[0]].astype('float32')
+        data = output_data[list(output_data.keys())[0]].astype('float32')
 
         if self.task_id == 'grid':
             col_id = int(input_id) // self.grid_size

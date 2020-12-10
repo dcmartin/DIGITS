@@ -1,12 +1,12 @@
 # Copyright (c) 2015-2017, NVIDIA CORPORATION.  All rights reserved.
 
-import cPickle
+import pickle
 import os
 import tarfile
 
 import PIL.Image
 
-from downloader import DataDownloader
+from .downloader import DataDownloader
 
 
 class Cifar100Downloader(DataDownloader):
@@ -26,7 +26,7 @@ class Cifar100Downloader(DataDownloader):
         assert os.path.exists(filepath), 'Expected "%s" to exist' % filename
 
         if not os.path.exists(os.path.join(self.outdir, 'cifar-100-python')):
-            print "Uncompressing file=%s ..." % filename
+            print("Uncompressing file=%s ..." % filename)
             with tarfile.open(filepath) as tf:
                 tf.extractall(self.outdir)
 
@@ -34,7 +34,7 @@ class Cifar100Downloader(DataDownloader):
         label_filename = 'meta'
         label_filepath = os.path.join(self.outdir, 'cifar-100-python', label_filename)
         with open(label_filepath, 'rb') as infile:
-            pickleObj = cPickle.load(infile)
+            pickleObj = pickle.load(infile)
             fine_label_names = pickleObj['fine_label_names']
             coarse_label_names = pickleObj['coarse_label_names']
 
@@ -67,12 +67,12 @@ class Cifar100Downloader(DataDownloader):
         fine_label_names -- mapping from fine_labels to strings
         coarse_label_names -- mapping from coarse_labels to strings
         """
-        print 'Extracting images file=%s ...' % input_file
+        print('Extracting images file=%s ...' % input_file)
 
         # Read the pickle file
         with open(input_file, 'rb') as infile:
-            pickleObj = cPickle.load(infile)
-            # print 'Batch -', pickleObj['batch_label']
+            pickleObj = pickle.load(infile)
+            # print('Batch -', pickleObj['batch_label'])
             data = pickleObj['data']
             assert data.shape[1] == 3072, 'Unexpected data.shape %s' % (data.shape,)
             count = data.shape[0]
@@ -117,7 +117,7 @@ class Cifar100Downloader(DataDownloader):
                     fine_to_coarse[fine_label] = coarse_label_names[coarse_labels[index]]
 
         # Create the coarse dataset with symlinks
-        for fine, coarse in fine_to_coarse.iteritems():
+        for fine, coarse in fine_to_coarse.items():
             self.mkdir(os.path.join(coarse_dirname, coarse))
             os.symlink(
                 # Create relative symlinks for portability

@@ -5,24 +5,12 @@
 DIGITS (the **D**eep Learning **G**PU **T**raining **S**ystem) is a webapp for training deep learning models.
 The currently supported frameworks are: Caffe, Torch, and Tensorflow.
 
-
-# Feedback
-In addition to submitting pull requests, feel free to submit and vote on feature requests via [our ideas portal]( https://nvdigits.ideas.aha.io/).
-
-
-# Documentation
-
-Current and most updated document is availabel at
- [NVIDIA Accelerated Computing, Deep Learning Documentation, NVIDIA DIGITS](https://docs.nvidia.com/deeplearning/digits/index.html).
-
-
 # Installation
 
 | Installation method | Supported platform[s] | Available versions | Instructions |
 | --- | --- | --- | --- |
 | Source | Ubuntu 14.04, 16.04 | [GitHub tags](https://github.com/NVIDIA/DIGITS/releases) | [docs/BuildDigits.md](docs/BuildDigits.md) |
 
-Official DIGITS container is available at nvcr.io via docker pull command.
 
 # Usage
 

@@ -73,9 +73,10 @@ class InferenceTask(Task):
         self.inference_log = open(self.path(self.inference_log_file), 'a')
         if type(self.images) is list:
             # create a file to pass the list of images to perform inference on
-            imglist_handle, self.image_list_path = tempfile.mkstemp(dir=self.job_dir, suffix='.txt')
+            imglist_handle, self.image_list_path = tempfile.mkstemp(dir=self.job_dir, suffix='.txt', text=True)
             for image_path in self.images:
-                os.write(imglist_handle, "%s\n" % image_path)
+                line = "{}\n".format(image_path)
+                os.write(imglist_handle, line.encode())
             os.close(imglist_handle)
 
     @override

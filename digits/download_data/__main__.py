@@ -4,9 +4,9 @@ import argparse
 import sys
 import time
 
-from cifar10 import Cifar10Downloader
-from cifar100 import Cifar100Downloader
-from mnist import MnistDownloader
+from .cifar10 import Cifar10Downloader
+from .cifar100 import Cifar100Downloader
+from .mnist import MnistDownloader
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Download-Data tool - DIGITS')
@@ -48,7 +48,7 @@ if __name__ == '__main__':
             clean=args['clean'])
         d.getData()
     else:
-        print 'Unknown dataset "%s"' % args['dataset']
+        print('Unknown dataset "%s"' % args['dataset'])
         sys.exit(1)
 
-    print 'Done after %s seconds.' % (time.time() - start)
+    print('Done after %s seconds.' % (time.time() - start))

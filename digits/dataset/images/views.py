@@ -1,13 +1,8 @@
 # Copyright (c) 2014-2017, NVIDIA CORPORATION.  All rights reserved.
 from __future__ import absolute_import
 
+from io import BytesIO
 import os.path
-
-# Find the best implementation available
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
 
 import flask
 import PIL.Image
@@ -42,7 +37,7 @@ def resize_example():
         if backend != 'lmdb' or encoding == 'none':
             length = len(image.tostring())
         else:
-            s = StringIO()
+            s = BytesIO()
             if encoding == 'png':
                 PIL.Image.fromarray(image).save(s, format='PNG')
             elif encoding == 'jpg':

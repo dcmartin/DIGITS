@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # Copyright (c) 2015-2017, NVIDIA CORPORATION.  All rights reserved.
 
 """
@@ -11,6 +11,7 @@ import argparse
 import os
 import time
 
+from six.moves import xrange
 from google.protobuf import text_format
 import numpy as np
 import PIL.Image
@@ -148,7 +149,7 @@ def forward_pass(images, net, transformer, batch_size=None):
             scores = np.copy(output)
         else:
             scores = np.vstack((scores, output))
-        print 'Processed %s/%s images in %f seconds ...' % (len(scores), len(caffe_images), (end - start))
+        print('Processed %s/%s images in %f seconds ...' % (len(scores), len(caffe_images), (end - start)))
 
     return scores
 
@@ -161,7 +162,7 @@ def read_labels(labels_file):
     labels_file -- path to a .txt file
     """
     if not labels_file:
-        print 'WARNING: No labels file provided. Results will be difficult to interpret.'
+        print('WARNING: No labels file provided. Results will be difficult to interpret.')
         return None
 
     labels = []
@@ -223,10 +224,10 @@ def classify(caffemodel, deploy_file, image_files,
         classifications.append(result)
 
     for index, classification in enumerate(classifications):
-        print '{:-^80}'.format(' Prediction for %s ' % image_files[index])
+        print('{:-^80}'.format(' Prediction for %s ' % image_files[index]))
         for label, confidence in classification:
-            print '{:9.4%} - "{}"'.format(confidence / 100.0, label)
-        print
+            print('{:9.4%} - "{}"'.format(confidence / 100.0, label))
+        print()
 
 
 if __name__ == '__main__':
@@ -257,4 +258,4 @@ if __name__ == '__main__':
         not args['nogpu'],
     )
 
-    print 'Script took %f seconds.' % (time.time() - script_start_time,)
+    print('Script took %f seconds.' % (time.time() - script_start_time,))

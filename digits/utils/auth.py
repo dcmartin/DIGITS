@@ -51,7 +51,7 @@ def requires_login(f=None, redirect=True):
             # Validate username
             validate_username(username)
         except ValueError as e:
-            raise werkzeug.exceptions.BadRequest('Invalid username - %s' % e.message)
+            raise werkzeug.exceptions.BadRequest('Invalid username - %s' % str(e))
         return f(*args, **kwargs)
     return decorated
 

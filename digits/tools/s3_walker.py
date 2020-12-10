@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from boto.s3.connection import S3Connection
@@ -85,5 +85,5 @@ class S3Walker(object):
 
         return keys
 
-    def create_bucket(self, bucket):
-        return self.conn.create_bucket(bucket)
+    def create_bucket(self, bucket, location=''):
+        return self.conn.create_bucket(bucket, location=location)

@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
 """
 Functions for creating a text classification dataset out of .csv files
@@ -7,7 +7,7 @@ The expected CSV structure is:
 """
 
 import argparse
-import caffe
+# import caffe
 import csv
 import lmdb
 import numpy as np
@@ -15,6 +15,8 @@ import os
 import PIL.Image
 import shutil
 import time
+
+from digits.dataset.datum import array_to_datum
 
 DB_BATCH_SIZE = 1024
 ALPHABET = "abcdefghijklmnopqrstuvwxyz0123456789-,;.!?:'\"/\\|_@#$%^&*~`+ =<>()[]{}"
@@ -39,7 +41,7 @@ def create_dataset(folder, input_file_name, db_batch_size=None, create_images=Fa
     # open output LMDB
     output_db = lmdb.open(folder, map_async=True, max_dbs=0)
 
-    print "Reading input file %s..." % input_file_name
+    print("Reading input file %s..." % input_file_name)
     # create character dict
     cdict = {}
     for i, c in enumerate(ALPHABET):
@@ -80,13 +82,13 @@ def create_dataset(folder, input_file_name, db_batch_size=None, create_images=Fa
         assert len(classes) == len(samples)
     else:
         labels = classes
-    print "Class labels: %s" % repr(labels)
+    print("Class labels: %s" % repr(labels))
 
     if create_images:
         for label in labels:
             os.makedirs(os.path.join(args['output'], label))
 
-    print "Storing data into %s..." % folder
+    print("Storing data into %s..." % folder)
 
     batch = []
     for idx in indices:
@@ -98,7 +100,7 @@ def create_dataset(folder, input_file_name, db_batch_size=None, create_images=Fa
             if create_images:
                 filename = os.path.join(args['output'], labels[c], '%d.png' % idx)
                 _save_image(sample, filename)
-            datum = caffe.io.array_to_datum(sample, class_id)
+            datum = array_to_datum(sample, class_id)
             batch.append(('%d_%d' % (idx, class_id), datum))
         if len(batch) >= db_batch_size:
             _write_batch_to_lmdb(output_db, batch)
@@ -159,4 +161,4 @@ if __name__ == '__main__':
         labels_file=args['labels'],
     )
 
-    print 'Done after %s seconds' % (time.time() - start_time,)
+    print('Done after %s seconds' % (time.time() - start_time,))

@@ -10,30 +10,30 @@ cd "$SRC_DIR"
 ### Check for basic requirements
 ################################################################################
 
-if ! which git >/dev/null 2>&1; then
-    echo "git not installed"
-    exit 1
-fi
-if ! git rev-parse >/dev/null 2>&1; then
-    echo "not a git repository"
-    exit 1
-fi
-if [ "$(git rev-parse --show-toplevel)" != "$SRC_DIR" ]; then
-    echo "$SRC_DIR is not a git repository"
-    exit 1
-fi
-if ! which python >/dev/null 2>&1; then
-    echo "python not installed"
-    exit 1
-fi
-if ! git diff-index --quiet HEAD >/dev/null 2>&1; then
-    echo "git index is dirty - either stash or commit your changes"
-    exit 1
-fi
-if ! which docker >/dev/null 2>&1; then
-    echo "docker not installed"
-    exit 1
-fi
+#if ! which git >/dev/null 2>&1; then
+#    echo "git not installed"
+#    exit 1
+#fi
+#if ! git rev-parse >/dev/null 2>&1; then
+#    echo "not a git repository"
+#    exit 1
+#fi
+#if [ "$(git rev-parse --show-toplevel)" != "$SRC_DIR" ]; then
+#    echo "$SRC_DIR is not a git repository"
+#    exit 1
+#fi
+#if ! which python >/dev/null 2>&1; then
+#    echo "python not installed"
+#    exit 1
+#fi
+#if ! git diff-index --quiet HEAD >/dev/null 2>&1; then
+#    echo "git index is dirty - either stash or commit your changes"
+#    exit 1
+#fi
+#if ! which docker >/dev/null 2>&1; then
+#    echo "docker not installed"
+#    exit 1
+#fi
 
 ################################################################################
 # Read envvars

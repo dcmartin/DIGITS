@@ -47,7 +47,7 @@ class Visualization(VisualizationInterface):
                 raise ValueError("No palette found in dataset - choose other colormap")
             palette = dataset.extension_userdata[COLOR_PALETTE_ATTRIBUTE]
             # assume 8-bit RGB palette and convert to N*3 numpy array
-            palette = np.array(palette).reshape((len(palette) / 3, 3)) / 255.
+            palette = np.array(palette).reshape((len(palette) // 3, 3)) / 255.
             # normalize input pixels to [0,1]
             norm = mpl.colors.Normalize(vmin=0, vmax=255)
             # create map
@@ -178,7 +178,7 @@ class Visualization(VisualizationInterface):
         """Process one inference and return data to visualize."""
         # assume the only output is a CHW image where C is the number
         # of classes, H and W are the height and width of the image
-        class_data = output_data[output_data.keys()[0]].astype('float32')
+        class_data = output_data[list(output_data.keys())[0]].astype('float32')
 
         # Is this binary segmentation?
         is_binary = class_data.shape[0] == 2
@@ -194,7 +194,7 @@ class Visualization(VisualizationInterface):
             fill_data = (self.map.to_rgba(class_data) * 255).astype('uint8')
         else:
             fill_data = np.ndarray((class_data.shape[0], class_data.shape[1], 4), dtype='uint8')
-            for x in xrange(3):
+            for x in range(3):
                 fill_data[:, :, x] = class_data.copy()
 
         # Assuming that class 0 is the background

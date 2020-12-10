@@ -4,7 +4,7 @@
  app.controller('bbox_controller_{{index}}', function($scope, $controller) {
      $controller('bbox_controller', {$scope: $scope});
      $scope.canvas_id = 'image-canvas-{{index}}';
-     $scope.bboxes = {{bboxes}};
+     $scope.bboxes = {{ bboxes | safe }};
      $scope.image = "{{image}}";
      $scope.draw_bboxes_and_image();
  });

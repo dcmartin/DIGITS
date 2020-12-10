@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # Copyright (c) 2017, NVIDIA CORPORATION.  All rights reserved.
 
 import argparse
@@ -8,10 +8,11 @@ import pickle
 import PIL.Image
 import os
 import sys
+from six.moves import xrange
 try:
     from cStringIO import StringIO
 except ImportError:
-    from StringIO import StringIO
+    from io import StringIO
 
 # Add path for DIGITS package
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -22,7 +23,9 @@ from digits.job import Job  # noqa
 from digits.utils.lmdbreader import DbReader  # noqa
 
 # Import digits.config before caffe to set the path
-import caffe_pb2  # noqa
+from digits.dataset import dataset_pb2
+from digits.dataset.datum import datum_to_array
+# import caffe_pb2  # noqa
 
 logger = logging.getLogger('digits.tools.inference')
 
@@ -34,7 +37,7 @@ def parse_datum(value):
     """
     Parse a Caffe datum
     """
-    datum = caffe_pb2.Datum()
+    datum = dataset_pb2.Datum()
     datum.ParseFromString(value)
     if datum.encoded:
         s = StringIO()
@@ -43,8 +46,7 @@ def parse_datum(value):
         img = PIL.Image.open(s)
         img = np.array(img)
     else:
-        import caffe.io
-        arr = caffe.io.datum_to_array(datum)
+        arr = datum_to_array(datum)
         # CHW -> HWC
         arr = arr.transpose((1, 2, 0))
         if arr.shape[2] == 1:
@@ -123,7 +125,6 @@ def infer(jobs_dir,
     # load images from database
     feature_db_path = dataset.get_feature_db_path(utils.constants.TRAIN_DB)
     feature_reader = DbReader(feature_db_path)
-
     label_db_path = dataset.get_label_db_path(utils.constants.TRAIN_DB)
     label_reader = DbReader(label_db_path)
 
@@ -234,6 +235,7 @@ if __name__ == '__main__':
 
     args = vars(parser.parse_args())
 
+    print(args)
     try:
         infer(
             args['jobs_dir'],
@@ -243,5 +245,5 @@ if __name__ == '__main__':
             args['gpu'],
         )
     except Exception as e:
-        logger.error('%s: %s' % (type(e).__name__, e.message))
+        logger.error('%s: %s' % (type(e).__name__, str(e)))
         raise
